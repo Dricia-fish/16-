@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>16进制颜色代码转换器 - 网页版</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Microsoft YaHei', 'Segoe UI', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            width: 100%;
+            max-width: 500px;
+            padding: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .title {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .title::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            border-radius: 2px;
+        }
+        
+        .input-section {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        
+        .input-label {
+            font-weight: bold;
+            color: #34495e;
+            white-space: nowrap;
+        }
+        
+        .hex-input {
+            flex-grow: 1;
+            padding: 12px 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            font-family: 'Consolas', monospace;
+            transition: all 0.3s;
+            outline: none;
+        }
+        
+        .hex-input:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+        
+        .convert-btn {
+            background: linear-gradient(to right, #3498db, #2ecc71);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        
+        .convert-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+        
+        .color-display {
+            height: 140px;
+            border-radius: 10px;
+            border: 3px solid #2c3e50;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 22px;
+            font-weight: bold;
+            font-family: 'Consolas', monospace;
+            transition: all 0.5s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .color-display::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, 
+                      transparent 50%, rgba(255,255,255,0.1) 50%, 
+                      rgba(255,255,255,0.1) 75%, transparent 75%);
+            background-size: 20px 20px;
+            z-index: 1;
+            opacity: 0.3;
+        }
+        
+        .info-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .info-title {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .info-title::before {
+            content: '🎨';
+            margin-right: 8px;
+            font-size: 20px;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 10px;
+            font-family: 'Consolas', monospace;
+            font-size: 14px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #34495e;
+            width: 100px;
+            flex-shrink: 0;
+        }
+        
+        .info-value {
+            color: #2c3e50;
+            flex-grow: 1;
+        }
+        
+        .button-section {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            flex-grow: 1;
+            max-width: 140px;
+        }
+        
+        .copy-hex-btn {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .copy-rgb-btn {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .random-btn {
+            background-color: #9b59b6;
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .copy-hex-btn:hover { background-color: #2980b9; }
+        .copy-rgb-btn:hover { background-color: #27ae60; }
+        .random-btn:hover { background-color: #8e44ad; }
+        
+        .message {
+            text-align: center;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-weight: bold;
+            transition: all 0.3s;
+            opacity: 0;
+        }
+        
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            opacity: 1;
+        }
+        
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            opacity: 1;
+        }
+        
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            color: #7f8c8d;
+            font-size: 13px;
+            padding-top: 15px;
+            border-top: 1px solid #ecf0f1;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            
+            .input-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .button-section {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .action-btn {
+                max-width: 100%;
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title">16进制颜色代码转换器</h1>
+        
+        <div class="input-section">
+            <label class="input-label">16进制颜色代码:</label>
+            <input type="text" class="hex-input" id="hexInput" value="A4BCC7" maxlength="7" placeholder="例如: A4BCC7 或 #A4BCC7">
+            <button class="convert-btn" id="convertBtn">转换</button>
+        </div>
+        
+        <div class="color-display" id="colorDisplay">
+            #A4BCC7
+        </div>
+        
+        <div class="info-section">
+            <div class="info-title">颜色信息</div>
+            <div class="info-row">
+                <div class="info-label">16进制:</div>
+                <div class="info-value" id="hexValue">#A4BCC7</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">RGB:</div>
+                <div class="info-value" id="rgbValue">(164, 188, 199)</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">HSL:</div>
+                <div class="info-value" id="hslValue">(198.9°, 23.8%, 71.2%)</div>
+            </div>
+            <div class="info-row">
+                <div class="info-label">CMYK:</div>
+                <div class="info-value" id="cmykValue">(17.6%, 5.5%, 0.0%, 22.0%)</div>
+            </div>
+        </div>
+        
+        <div class="button-section">
+            <button class="action-btn copy-hex-btn" id="copyHexBtn">复制16进制</button>
+            <button class="action-btn copy-rgb-btn" id="copyRgbBtn">复制RGB</button>
+            <button class="action-btn random-btn" id="randomBtn">随机颜色</button>
+        </div>
+        
+        <div class="message" id="message"></div>
+        
+        <div class="footer">
+            网页版颜色转换器 | 基于JavaScript实现 | 输入6位16进制颜色代码
+        </div>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const hexInput = document.getElementById('hexInput');
+        const convertBtn = document.getElementById('convertBtn');
+        const colorDisplay = document.getElementById('colorDisplay');
+        const hexValue = document.getElementById('hexValue');
+        const rgbValue = document.getElementById('rgbValue');
+        const hslValue = document.getElementById('hslValue');
+        const cmykValue = document.getElementById('cmykValue');
+        const copyHexBtn = document.getElementById('copyHexBtn');
+        const copyRgbBtn = document.getElementById('copyRgbBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        const message = document.getElementById('message');
+        
+        // 初始加载时转换颜色
+        window.onload = function() {
+            convertColor();
+            hexInput.focus();
+            hexInput.select();
+        };
+        
+        // 转换按钮点击事件
+        convertBtn.addEventListener('click', convertColor);
+        
+        // 回车键支持
+        hexInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                convertColor();
+            }
+        });
+        
+        // 输入验证
+        hexInput.addEventListener('input', function() {
+            let value = this.value.replace('#', '').toUpperCase();
+            
+            // 只允许16进制字符
+            value = value.replace(/[^0-9A-F]/g, '');
+            
+            // 限制长度为6位
+            if (value.length > 6) {
+                value = value.substring(0, 6);
+            }
+            
+            // 如果输入长度达到6位，自动添加#号并转换
+            if (value.length === 6) {
+                this.value = value;
+                // 可选：自动转换
+                // convertColor();
+            } else {
+                this.value = value;
+            }
+        });
+        
+        // 复制16进制按钮点击事件
+        copyHexBtn.addEventListener('click', function() {
+            const hexText = hexValue.textContent;
+            navigator.clipboard.writeText(hexText).then(function() {
+                showMessage('16进制代码已复制到剪贴板！', 'success');
+            }).catch(function(err) {
+                showMessage('复制失败，请手动复制: ' + hexText, 'error');
+            });
+        });
+        
+        // 复制RGB按钮点击事件
+        copyRgbBtn.addEventListener('click', function() {
+            const rgbText = rgbValue.textContent;
+            navigator.clipboard.writeText(rgbText).then(function() {
+                showMessage('RGB值已复制到剪贴板！', 'success');
+            }).catch(function(err) {
+                showMessage('复制失败，请手动复制: ' + rgbText, 'error');
+            });
+        });
+        
+        // 随机颜色按钮点击事件
+        randomBtn.addEventListener('click', function() {
+            // 生成随机颜色
+            const r = Math.floor(Math.random() * 256);
+            const g = Math.floor(Math.random() * 256);
+            const b = Math.floor(Math.random() * 256);
+            
+            // 转换为16进制
+            const hex = '#' + 
+                r.toString(16).padStart(2, '0').toUpperCase() + 
+                g.toString(16).padStart(2, '0').toUpperCase() + 
+                b.toString(16).padStart(2, '0').toUpperCase();
+            
+            hexInput.value = hex.substring(1); // 去掉#号
+            convertColor();
+            showMessage('已生成随机颜色！', 'success');
+        });
+        
+        // 颜色转换主函数
+        function convertColor() {
+            try {
+                let input = hexInput.value.trim();
+                
+                if (input === '') {
+                    throw new Error('请输入颜色代码');
+                }
+                
+                // 清理输入，确保是6位16进制数
+                input = input.replace('#', '').toUpperCase();
+                
+                if (input.length !== 6) {
+                    throw new Error('颜色代码必须是6位16进制数');
+                }
+                
+                if (!/^[0-9A-F]{6}$/.test(input)) {
+                    throw new Error('包含无效的16进制字符');
+                }
+                
+                // 转换为RGB
+                const r = parseInt(input.substring(0, 2), 16);
+                const g = parseInt(input.substring(2, 4), 16);
+                const b = parseInt(input.substring(4, 6), 16);
+                
+                // 更新颜色显示
+                const hexColor = '#' + input;
+                colorDisplay.style.backgroundColor = hexColor;
+                
+                // 根据亮度计算对比色
+                const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                colorDisplay.style.color = brightness >= 128 ? '#000000' : '#FFFFFF';
+                colorDisplay.textContent = hexColor;
+                
+                // 更新颜色信息
+                hexValue.textContent = hexColor;
+                rgbValue.textContent = `(${r}, ${g}, ${b})`;
+                
+                // 计算并显示HSL
+                const hsl = rgbToHsl(r, g, b);
+                hslValue.textContent = `(${hsl[0].toFixed(1)}°, ${(hsl[1] * 100).toFixed(1)}%, ${(hsl[2] * 100).toFixed(1)}%)`;
+                
+                // 计算并显示CMYK
+                const cmyk = rgbToCmyk(r, g, b);
+                cmykValue.textContent = `(${(cmyk[0] * 100).toFixed(1)}%, ${(cmyk[1] * 100).toFixed(1)}%, ${(cmyk[2] * 100).toFixed(1)}%, ${(cmyk[3] * 100).toFixed(1)}%)`;
+                
+                showMessage('转换成功！', 'success');
+                
+            } catch (error) {
+                showMessage('错误: ' + error.message, 'error');
+            }
+        }
+        
+        // RGB转HSL函数
+        function rgbToHsl(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            
+            const max = Math.max(r, g, b);
+            const min = Math.min(r, g, b);
+            let h, s, l = (max + min) / 2;
+            
+            if (max === min) {
+                h = s = 0; // 灰色
+            } else {
+                const d = max - min;
+                s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+                
+                if (max === r) {
+                    h = (g - b) / d + (g < b ? 6 : 0);
+                } else if (max === g) {
+                    h = (b - r) / d + 2;
+                } else {
+                    h = (r - g) / d + 4;
+                }
+                
+                h /= 6;
+            }
+            
+            return [h * 360, s, l];
+        }
+        
+        // RGB转CMYK函数
+        function rgbToCmyk(r, g, b) {
+            r /= 255;
+            g /= 255;
+            b /= 255;
+            
+            const k = 1 - Math.max(r, g, b);
+            
+            if (k === 1) {
+                return [0, 0, 0, 1]; // 纯黑色
+            }
+            
+            const c = (1 - r - k) / (1 - k);
+            const m = (1 - g - k) / (1 - k);
+            const y = (1 - b - k) / (1 - k);
+            
+            return [c, m, y, k];
+        }
+        
+        // 显示消息函数
+        function showMessage(text, type) {
+            message.textContent = text;
+            message.className = 'message ' + type;
+            
+            // 3秒后隐藏消息
+            setTimeout(function() {
+                message.style.opacity = '0';
+                setTimeout(function() {
+                    message.className = 'message';
+                    message.style.opacity = '';
+                }, 300);
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
